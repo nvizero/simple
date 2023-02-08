@@ -1,12 +1,16 @@
 package api
 
 import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	db "simple/db/sqlc"
 	"simple/mockdb"
 	"simple/util"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetAccountAPI(t *testing.T) {
@@ -21,6 +25,14 @@ func TestGetAccountAPI(t *testing.T) {
 		Times(1).
 		Return(account, nil)
 
+	server := NewServer(store)
+	recorder := httptest.NewRecorder()
+	url := fmt.Sprintf("/accounts/%d", account.ID)
+	request, err := http.NewRequest(http.MethodGet, url, nil)
+
+	require.NoError(t, err)
+	server.router.ServeHTTP(recorder, request)
+	require.Equal(t, http.StatusOK, recorder.Code)
 }
 
 func rendomAccount() db.Account {
