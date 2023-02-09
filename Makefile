@@ -29,6 +29,7 @@ test:
 
 server:
 	go run main.go
+
 mock:
 	mockgen -package mockdb -destination mockdb/store.go simple/db/sqlc Store
 
